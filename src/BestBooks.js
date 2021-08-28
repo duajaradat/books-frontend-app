@@ -15,6 +15,7 @@ class MyFavoriteBooks extends React.Component {
         this.state = {
             booksData: [],
             show: false,
+            ID: null
 
         }
     }
@@ -24,8 +25,7 @@ class MyFavoriteBooks extends React.Component {
         console.log(BooksResult.data)
         this.setState({
             booksData: BooksResult.data,
-
-        })
+        }, () => console.log(this.state.booksData))
 
     }
 
@@ -36,14 +36,14 @@ class MyFavoriteBooks extends React.Component {
             email: user.email,
             title: event.target.title.value,
             description: event.target.description.value,
-            status: event.target.status.value
+
 
         }
         console.log(bookInfo);
         let addBook = await axios.post(`${process.env.REACT_APP_SERVER_LINK}/addbook`, bookInfo);
         this.setState({
             booksData: addBook.data,
-        }, (booksData) => { console.log({ booksData }) });
+        }, () => console.log(this.state.booksData));
     }
 
 
@@ -55,7 +55,17 @@ class MyFavoriteBooks extends React.Component {
     }
     closeModalHandler = () => {
         console.log('close')
-        this.setState({ show: 0 });
+        this.setState({ show: false });
+    }
+
+    deleteBookRequest = async (bookID) => {
+        const { user } = this.props.auth0;
+        console.log('delete this book');
+        console.log(bookID);
+        let deleteBook = await axios.delete(`${process.env.REACT_APP_SERVER_LINK}/deletebook/${bookID}?email=${user.email}`)
+        this.setState({
+            booksData: deleteBook.data
+        })
     }
 
     render() {
@@ -71,9 +81,11 @@ class MyFavoriteBooks extends React.Component {
                     </p>
                     <Button variant="outline-primary" onClick={this.showModalHandler}>Add New Book</Button>
                 </Jumbotron>
-                {this.state.booksData.length > 0 && (this.state.booksData.map((book, i) => <BooksCard book={book} key={i} />))}
+                {this.state.booksData.length > 0 && (this.state.booksData.map((book, i) => <BooksCard book={book} key={i} delete={this.deleteBookRequest} />))}
 
                 <AddBooks user={user} popup={this.state.show} close={this.closeModalHandler} addbook={this.addBookRequest} />
+
+
             </div>
         )
     }
