@@ -7,6 +7,7 @@ import { withAuth0 } from '@auth0/auth0-react';
 import BooksCard from './BooksCard';
 import { Button } from 'react-bootstrap';
 import AddBooks from './AddBooks';
+import UpdateBooks from './UpdateBooks';
 
 class MyFavoriteBooks extends React.Component {
 
@@ -15,7 +16,9 @@ class MyFavoriteBooks extends React.Component {
         this.state = {
             booksData: [],
             show: false,
-            ID: null
+            ID: null,
+            selectedBook: {},
+            updateModal: false,
 
         }
     }
@@ -36,8 +39,6 @@ class MyFavoriteBooks extends React.Component {
             email: user.email,
             title: event.target.title.value,
             description: event.target.description.value,
-
-
         }
         console.log(bookInfo);
         let addBook = await axios.post(`${process.env.REACT_APP_SERVER_LINK}/addbook`, bookInfo);
@@ -55,7 +56,10 @@ class MyFavoriteBooks extends React.Component {
     }
     closeModalHandler = () => {
         console.log('close')
-        this.setState({ show: false });
+        this.setState({
+            show: false,
+            updateModal: false,
+        });
     }
 
     deleteBookRequest = async (bookID) => {
@@ -67,7 +71,37 @@ class MyFavoriteBooks extends React.Component {
             booksData: deleteBook.data
         })
     }
+    updateBookRequest = async (bookID) => {
+        // all the data saved in bookData
+        let chosenBook = this.state.booksData.find(book => {
+            // if (book._id === bookID) return true
+            return book._id === bookID;
+        })
+        console.log({ chosenBook }); // object
+        this.setState({
+            selectedBook: chosenBook,
+            updateModal: true,
+        }, () => console.log(this.state.updateModal));
+        // let updateBook = await axios.put(`${process.env.REACT_APP_SERVER_LINK}/updatebook/${bookID}?email=${user.email}`)
+    }
 
+    updateInfo = async (event) => {
+        event.preventDefault();
+        console.log('inside update function')
+        const { user } = this.props.auth0;
+        const bookInfo = {
+            email: user.email,
+            title: event.target.title.value,
+            description: event.target.description.value,
+        }
+        console.log(bookInfo);
+        const bookID = this.state.selectedBook._id
+        let updateBook = await axios.post(`${process.env.REACT_APP_SERVER_LINK}/updatebook/${bookID}?email=${user.email}`, bookInfo);
+        this.setState({
+            booksData: updateBook.data,
+        }, () => console.log(this.state.booksData));
+
+    }
     render() {
         console.log(this.state.show);
 
@@ -81,9 +115,12 @@ class MyFavoriteBooks extends React.Component {
                     </p>
                     <Button variant="outline-primary" onClick={this.showModalHandler}>Add New Book</Button>
                 </Jumbotron>
-                {this.state.booksData.length > 0 && (this.state.booksData.map((book, i) => <BooksCard book={book} key={i} delete={this.deleteBookRequest} />))}
+                {this.state.booksData.length > 0 && (this.state.booksData.map((book, i) => <BooksCard book={book} key={i} delete={this.deleteBookRequest} update={this.updateBookRequest} />))}
 
                 <AddBooks user={user} popup={this.state.show} close={this.closeModalHandler} addbook={this.addBookRequest} />
+
+                {this.state.updateModal && <UpdateBooks user={user} updatemodal={this.state.updateModal} close={this.closeModalHandler} selectedBook={this.state.selectedBook} updateInfo={this.updateInfo} />}
+
 
 
             </div>
