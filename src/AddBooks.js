@@ -24,9 +24,7 @@ export class AddBooks extends Component {
                             <Form.Group className="mb-3" >
                                 <Form.Control as="textarea" name="description" rows={3} placeholder="Description" />
                             </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Control type="text" name="status" placeholder=" Status" />
-                            </Form.Group>
+
                             <Button variant="primary" type="submit" onClick={this.props.close} >ADD</Button>
                         </Form >
 
