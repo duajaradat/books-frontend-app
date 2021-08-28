@@ -96,15 +96,14 @@ class MyFavoriteBooks extends React.Component {
         }
         console.log(bookInfo);
         const bookID = this.state.selectedBook._id
-        let updateBook = await axios.post(`${process.env.REACT_APP_SERVER_LINK}/updatebook/${bookID}?email=${user.email}`, bookInfo);
+        let updateBook = await axios.put(`${process.env.REACT_APP_SERVER_LINK}/updatebook/${bookID}?email=${user.email}`, bookInfo);
+        console.log(updateBook, "updateBook");
         this.setState({
             booksData: updateBook.data,
-        }, () => console.log(this.state.booksData));
+        }, () => (this.closeModalHandler()));
 
     }
     render() {
-        console.log(this.state.show);
-
         const { user } = this.props.auth0;
         return (
             <div>
@@ -128,10 +127,10 @@ class MyFavoriteBooks extends React.Component {
     }
 }
 
+export default withAuth0(MyFavoriteBooks);
 {/* <withAuth0>
     .../ class component  
     <MyFavoriteBooks Auth0={Auth0} >
 </withAuth0> */}
 
-export default withAuth0(MyFavoriteBooks);
 

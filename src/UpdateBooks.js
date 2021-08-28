@@ -13,7 +13,6 @@ export class UpdateBooks extends Component {
                         <Modal.Title>Update Your Book</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-
                         < Form onSubmit={this.props.updateInfo}>
                             <Form.Group className="mb-3"  >
                                 <Form.Control type="email" defaultValue={this.props.user.email} />
@@ -24,9 +23,8 @@ export class UpdateBooks extends Component {
                             <Form.Group className="mb-3" >
                                 <Form.Control as="textarea" name="description" rows={3} defaultValue={this.props.selectedBook.description} />
                             </Form.Group>
-                            <Button variant="primary" type="submit" onClick={this.props.close} >UPDATE</Button>
+                            <Button variant="primary" type="submit" >UPDATE</Button>
                         </Form >
-
                     </Modal.Body>
 
                 </Modal>
